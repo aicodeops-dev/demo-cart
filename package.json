@@ -1,0 +1,14 @@
+{
+  "name": "aicodeops-demo-cart",
+  "version": "1.0.0",
+  "description": "A tiny shopping-cart module used in AI CodeOps tutorials.",
+  "type": "module",
+  "main": "src/cart.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
