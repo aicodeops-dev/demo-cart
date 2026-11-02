@@ -30,7 +30,26 @@ export function applyDiscount(amount, percent) {
   return amount - amount * (percent / 100);
 }
 
+/** Round a numeric amount to two decimal places (whole cents). */
+function roundToCents(amount) {
+  return Math.round(amount * 100) / 100;
+}
+
+/** Free‑shipping threshold – orders with subtotal ≥ $50 ship free. */
+const FREE_SHIPPING_THRESHOLD = 50; // dollars
+
+/** Flat shipping fee applied when the threshold is not met. */
+const SHIPPING_COST = 5.99; // dollars
+
 export function total(cart, { taxRate = 0.0825, discountPercent = 0 } = {}) {
-  const discounted = applyDiscount(subtotal(cart), discountPercent);
-  return discounted + discounted * taxRate;
+  // Base subtotal before any discounts
+  const base = subtotal(cart);
+  // Apply discount if any
+  const discounted = applyDiscount(base, discountPercent);
+  // Apply tax on discounted amount
+  const taxed = discounted + discounted * taxRate;
+  // Determine shipping: only charge if there is a positive subtotal less than threshold
+  const shipping = base > 0 && base < FREE_SHIPPING_THRESHOLD ? SHIPPING_COST : 0;
+  // Return final amount rounded to whole cents
+  return roundToCents(taxed + shipping);
 }
