@@ -29,3 +29,27 @@ test("applies tax with no discount", () => {
   addItem(cart, { sku: "tee", name: "T-shirt", price: 100 });
   assert.equal(total(cart, { taxRate: 0.1 }), 110);
 });
+
+// New tests for shipping rule and rounding
+
+test("free shipping for orders >= $50", () => {
+  const cart = createCart();
+  addItem(cart, { sku: "expensive", name: "Expensive", price: 60 });
+  // taxRate 0, no discount → total should be just the subtotal
+  assert.equal(total(cart, { taxRate: 0 }), 60);
+});
+
+test("shipping charge for orders < $50", () => {
+  const cart = createCart();
+  addItem(cart, { sku: "cheap", name: "Cheap", price: 20 });
+  // subtotal 20, taxRate 0, shipping 5.99 → total 25.99
+  assert.equal(total(cart, { taxRate: 0 }), 25.99);
+});
+
+test("total is rounded to whole cents", () => {
+  const cart = createCart();
+  // subtotal 10, taxRate 7.75% → tax = 0.775, taxed = 10.775
+  // shipping applies (subtotal < 50) = 5.99, sum = 16.765 → rounded = 16.77
+  addItem(cart, { sku: "item", name: "Item", price: 10 });
+  assert.equal(total(cart, { taxRate: 0.0775 }), 16.77);
+});
