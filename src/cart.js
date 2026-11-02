@@ -1,0 +1,36 @@
+// A tiny shopping cart used in AI CodeOps tutorials.
+// Prices are in dollars.
+
+export function createCart() {
+  return { items: [] };
+}
+
+export function addItem(cart, { sku, name, price, qty = 1 }) {
+  if (!sku) throw new Error("sku is required");
+  if (price < 0) throw new Error("price must not be negative");
+  const existing = cart.items.find((i) => i.sku === sku);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.items.push({ sku, name, price, qty });
+  }
+  return cart;
+}
+
+export function removeItem(cart, sku) {
+  cart.items = cart.items.filter((i) => i.sku !== sku);
+  return cart;
+}
+
+export function subtotal(cart) {
+  return cart.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+}
+
+export function applyDiscount(amount, percent) {
+  return amount - amount * (percent / 100);
+}
+
+export function total(cart, { taxRate = 0.0825, discountPercent = 0 } = {}) {
+  const discounted = applyDiscount(subtotal(cart), discountPercent);
+  return discounted + discounted * taxRate;
+}
